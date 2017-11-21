@@ -38,6 +38,11 @@ public:
 	void Draw_mountain(int bias1, int bias2);
 };
 
+class grd
+{
+public:
+	void Initialize(void);
 
+};
 
 #endif
