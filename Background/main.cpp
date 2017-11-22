@@ -60,7 +60,7 @@ int main(void)
 		}
 
 		/////////////////////// draw everything ////////////////////
-	    // draw background
+	        // draw background
 		bmp.Draw_bgd();
 
 		// texture mapping goes here 
