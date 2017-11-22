@@ -16,6 +16,7 @@ class SteadyObjects
     public:
         int x, y;
         const int pixelperbit = 3;
+
 };
 
 
@@ -39,11 +40,13 @@ class Tubes : public SteadyObjects
          * DrawLower should take x0, y0 as origin of drawing
          */
         void UpdateHeight();
-        void Draw() const;
-        void DrawUpper() const;
-        void DrawLower(int x0, int y0) const;
+        void Draw(int cameraX) const;
+        void DrawUpper(int cameraX) const;
+        void DrawLower(int x0, int y0, int cameraX) const;
         //char GetPixel(int x,int y) const;
 };
+
+
 
 class Bricks : public SteadyObjects
 {
@@ -60,7 +63,7 @@ class Bricks : public SteadyObjects
         int w, h;
         int shift, y_peak, y_original, reachpeak;
         //void Print(void) const;
-        void Draw(void) const;
+        void Draw(int cameraX) const;
         void MarioContact(int mx, int my, int mw, int mh);
         void ShiftUp();
         //char GetPixel(int x,int y) const;
@@ -82,7 +85,7 @@ class Mushrooms
         double x, y, vx, vy;
         int w, h;
         int alive;
-        void Draw(void) const;
+        void Draw(int cameraX) const;
         void Move(Tubes tube[], int nTubes, Bricks brick[], int nBricks, double dt);
         int Contact(Tubes * tube) const;
         int Contact(Bricks * brick) const;
@@ -107,8 +110,27 @@ class Coins : public SteadyObjects
         //void SetPixel(const int x,const int y,const char c);
 
         //void Print(void) const;
-        void Draw(void) const;
+        void Draw(int cameraX) const;
         //char GetPixel(int x,int y) const;
         void MarioContact(int mx, int my, int mw, int mh);
 };
+
+class Objects
+{
+    public:
+        //const int nCoins = 5;
+        const int nBricks = 29;
+        const int nTubes = 6;
+        //Coins coin[5];
+        Bricks brick[29];
+        Tubes tube[6];
+
+        Mushrooms mushroom;
+
+        void Init(void);
+        void Contact(int marioX, int marioY, int marioW, int marioH);
+        void MushroomMove(int marioX, int marioY, int marioW, int marioH, double dt);
+        void Draw(int cameraX);
+};
+
 #endif

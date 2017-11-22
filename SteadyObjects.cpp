@@ -223,7 +223,7 @@ Mushrooms::Mushrooms()
 
     x = 0.0; y = 0.0;
     w = 48; h = 48;
-    vx = -200.0;
+    vx = 200.0;
     vy = 0.0;
     alive = 1;
     wid = 16;
@@ -285,7 +285,7 @@ Mushrooms &Mushrooms::operator=(const Mushrooms &incoming)
     return * this;
 }
 
-void Mushrooms::Draw(void) const
+void Mushrooms::Draw(int cameraX) const
 {
     int pixelperbit = 3;
     glBegin(GL_QUADS);
@@ -299,20 +299,20 @@ void Mushrooms::Draw(void) const
             switch (dat[i + hei*j]) {
                 case 'r':
                     glColor3ub(200,0,5);
-                    DrawRect(x+i*pixelperbit, y+j*pixelperbit,
-                             x+(i+1)*pixelperbit, y+(j+1)*pixelperbit,
+                    DrawRect(x+i*pixelperbit-cameraX, y+j*pixelperbit,
+                             x+(i+1)*pixelperbit-cameraX, y+(j+1)*pixelperbit,
                              1);
                     break;
                 case '.':
                     glColor3ub(255,255,255);
-                    DrawRect(x+i*pixelperbit, y+j*pixelperbit,
-                             x+(i+1)*pixelperbit, y+(j+1)*pixelperbit,
+                    DrawRect(x+i*pixelperbit-cameraX, y+j*pixelperbit,
+                             x+(i+1)*pixelperbit-cameraX, y+(j+1)*pixelperbit,
                              1);
                     break;
                 case 'k':
                     glColor3ub(0,0,0);
-                    DrawRect(x+i*pixelperbit, y+j*pixelperbit,
-                             x+(i+1)*pixelperbit, y+(j+1)*pixelperbit,
+                    DrawRect(x+i*pixelperbit-cameraX, y+j*pixelperbit,
+                             x+(i+1)*pixelperbit-cameraX, y+(j+1)*pixelperbit,
                              1);
                     break;
                 default:
@@ -509,17 +509,17 @@ Tubes &Tubes::operator=(const Tubes &incoming)
     //}
 //}
 
-void Tubes::Draw(void) const
+void Tubes::Draw(int cameraX) const
 {
     int i;
     int bsize = 48;
-    DrawUpper();
+    DrawUpper(cameraX);
     for (i = 0; i < layers-1; ++i) {
-        DrawLower(x, y + i*bsize);
+        DrawLower(x, y + i*bsize, cameraX);
     }
 }
 
-void Tubes::DrawUpper() const
+void Tubes::DrawUpper(int cameraX) const
 {
     glBegin(GL_QUADS);
     int i, j;
@@ -529,20 +529,20 @@ void Tubes::DrawUpper() const
             switch (dat[i + hei*j]) {
                 case 'g':
                     glColor3ub(112,202,15);
-                    DrawRect(x+i*pixelperbit, y+j*pixelperbit,
-                             x+(i+1)*pixelperbit, y+(j+1)*pixelperbit,
+                    DrawRect(x+i*pixelperbit-cameraX, y+j*pixelperbit,
+                             x+(i+1)*pixelperbit-cameraX, y+(j+1)*pixelperbit,
                              1);
                     break;
                 case 'G':
                     glColor3ub(22,154,4);
-                    DrawRect(x+i*pixelperbit, y+j*pixelperbit,
-                             x+(i+1)*pixelperbit, y+(j+1)*pixelperbit,
+                    DrawRect(x+i*pixelperbit-cameraX, y+j*pixelperbit,
+                             x+(i+1)*pixelperbit-cameraX, y+(j+1)*pixelperbit,
                              1);
                     break;
                 case 'k':
                     glColor3ub(0,0,0);
-                    DrawRect(x+i*pixelperbit, y+j*pixelperbit,
-                             x+(i+1)*pixelperbit, y+(j+1)*pixelperbit,
+                    DrawRect(x+i*pixelperbit-cameraX, y+j*pixelperbit,
+                             x+(i+1)*pixelperbit-cameraX, y+(j+1)*pixelperbit,
                              1);
                     break;
                 default:
@@ -553,7 +553,7 @@ void Tubes::DrawUpper() const
     glEnd();
 }
 
-void Tubes::DrawLower(int x0, int y0) const
+void Tubes::DrawLower(int x0, int y0, int cameraX) const
 {
     glBegin(GL_QUADS);
     int i, j;
@@ -563,20 +563,20 @@ void Tubes::DrawLower(int x0, int y0) const
             switch (dat[i + hei*j]) {
                 case 'g':
                     glColor3ub(112,202,15);
-                    DrawRect(x0+i*pixelperbit, y0+j*pixelperbit,
-                             x0+(i+1)*pixelperbit, y0+(j+1)*pixelperbit,
+                    DrawRect(x0+i*pixelperbit-cameraX, y0+j*pixelperbit,
+                             x0+(i+1)*pixelperbit-cameraX, y0+(j+1)*pixelperbit,
                              1);
                     break;
                 case 'G':
                     glColor3ub(22,154,4);
-                    DrawRect(x0+i*pixelperbit, y0+j*pixelperbit,
-                             x0+(i+1)*pixelperbit, y0+(j+1)*pixelperbit,
+                    DrawRect(x0+i*pixelperbit-cameraX, y0+j*pixelperbit,
+                             x0+(i+1)*pixelperbit-cameraX, y0+(j+1)*pixelperbit,
                              1);
                     break;
                 case 'k':
                     glColor3ub(0,0,0);
-                    DrawRect(x0+i*pixelperbit, y0+j*pixelperbit,
-                             x0+(i+1)*pixelperbit, y0+(j+1)*pixelperbit,
+                    DrawRect(x0+i*pixelperbit-cameraX, y0+j*pixelperbit,
+                             x0+(i+1)*pixelperbit-cameraX, y0+(j+1)*pixelperbit,
                              1);
                     break;
                 default:
@@ -622,7 +622,7 @@ Bricks::Bricks()
         "kkkkkkkkkkkkkkkk"
     };
 
-    x = 0; y = 0;
+    //x = 0; y = 0;
     w = 48; h = 48;
     shift = 0;
     reachpeak = 0;
@@ -662,7 +662,8 @@ void Bricks::CleanUp(void)
 {
     if (nullptr != dat) {
         delete [] dat;
-        wid = 0; hei = 0; x = 0; y = 0;
+        wid = 0; hei = 0;
+        x = 0; y = 0;
         dat = nullptr;
     }
 }
@@ -703,32 +704,31 @@ Bricks &Bricks::operator=(const Bricks &incoming)
     //}
 //}
 
-void Bricks::Draw(void) const
+void Bricks::Draw(int cameraX) const
 {
     int i, j;
     glBegin(GL_QUADS);
-
 
     for (i = 0; i < 16; ++i) {
         for (j = 0; j < 16; ++j) {
             switch (dat[i + hei*j]) {
                 case 'y':
                     glColor3ub(251,221,194);
-                    DrawRect(x+i*pixelperbit, y+j*pixelperbit,
-                             x+(i+1)*pixelperbit, y+(j+1)*pixelperbit,
-                             1);
+                    DrawRect(x+i*pixelperbit-cameraX, y+j*pixelperbit,
+                            x+(i+1)*pixelperbit-cameraX, y+(j+1)*pixelperbit,
+                            1);
                     break;
                 case 'b':
                     glColor3ub(213,60,15);
-                    DrawRect(x+i*pixelperbit, y+j*pixelperbit,
-                             x+(i+1)*pixelperbit, y+(j+1)*pixelperbit,
-                             1);
+                    DrawRect(x+i*pixelperbit-cameraX, y+j*pixelperbit,
+                            x+(i+1)*pixelperbit-cameraX, y+(j+1)*pixelperbit,
+                            1);
                     break;
                 case 'k':
                     glColor3ub(0,0,0);
-                    DrawRect(x+i*pixelperbit, y+j*pixelperbit,
-                             x+(i+1)*pixelperbit, y+(j+1)*pixelperbit,
-                             1);
+                    DrawRect(x+i*pixelperbit-cameraX, y+j*pixelperbit,
+                            x+(i+1)*pixelperbit-cameraX, y+(j+1)*pixelperbit,
+                            1);
                     break;
                 default:
                     break;
@@ -892,8 +892,7 @@ Coins &Coins::operator=(const Coins &incoming)
     //}
 //}
 
-//void Coins::Draw(int scale) const
-void Coins::Draw() const
+void Coins::Draw(int cameraX) const
 {
     if (exist == 1) {
         glBegin(GL_QUADS);
@@ -904,20 +903,20 @@ void Coins::Draw() const
                 switch (dat[i + hei*j]) {
                     case 'k':
                         glColor3ub(0,0,0);
-                        DrawRect(x+i*pixelperbit, y+j*pixelperbit,
-                                x+(i+1)*pixelperbit, y+(j+1)*pixelperbit,
+                        DrawRect(x+i*pixelperbit-cameraX, y+j*pixelperbit,
+                                x+(i+1)*pixelperbit-cameraX, y+(j+1)*pixelperbit,
                                 1);
                         break;
                     case 'y':
                         glColor3ub(242,220,15);
-                        DrawRect(x+i*pixelperbit, y+j*pixelperbit,
-                                x+(i+1)*pixelperbit, y+(j+1)*pixelperbit,
+                        DrawRect(x+i*pixelperbit-cameraX, y+j*pixelperbit,
+                                x+(i+1)*pixelperbit-cameraX, y+(j+1)*pixelperbit,
                                 1);
                         break;
                     case '.':
                         glColor3ub(255,255,255);
-                        DrawRect(x+i*pixelperbit, y+j*pixelperbit,
-                                x+(i+1)*pixelperbit, y+(j+1)*pixelperbit,
+                        DrawRect(x+i*pixelperbit-cameraX, y+j*pixelperbit,
+                                x+(i+1)*pixelperbit-cameraX, y+(j+1)*pixelperbit,
                                 1);
                         break;
                     default:
@@ -943,3 +942,107 @@ void Coins::MarioContact(int mx, int my, int mw, int mh)
     //}
     //return 0;
 //}
+
+void Objects::Init(void)
+{
+    int i;
+    int brickx[] = { 21, 23, 25, 78, 80,
+                     81, 82, 83, 84, 85, 86, 87, 88,
+                     92, 93, 94, 95,101,102,119,
+                    122,123,124,129,132,
+                    130,131,173,174};
+    int bricky[] = {  4,  4,  4,  4,  4,
+                      8,  8,  8,  8,  8,  8,  8,  8,
+                      8,  8,  8,  4,  4,  4,  4,
+                      8,  8,  8,  8,  8,
+                      4,  4,  4,  4};
+    int tubex[] = { 28, 38, 46, 57,163,179};
+    int tubel[] = {  2,  3,  4,  4,  2,  2};  // layers
+    // init bricks
+    i = 0;
+    for (auto &b : brick) {
+        b.x = brickx[i]*48;
+        b.y = 576 - ((bricky[i]+1)*48+72);
+        b.y_original = b.y;
+        b.y_peak = b.y - b.h/2;
+        ++i;
+    }
+
+    // init coins
+    // don't need them now
+	//i = 0;
+	//for (auto &c : coin) {
+		//c.x = (i+3)*48;
+		//c.y = 1*48;
+		//i++;
+	//}
+
+    // init tubes
+    i = 0;
+    for (auto &t : tube) {
+        t.layers = tubel[i];
+        t.x = tubex[i]*48;
+        t.y = 576 - (t.layers*48+72);
+        t.UpdateHeight();
+        //i += 8;
+        ++i;
+    }
+
+    mushroom.x = 3*48.0;
+    mushroom.y = 7*48.0;
+
+    // Test code, just ignore them
+    //int brickx[] = {1,1,1,1,1,
+                    //1,1,1,1,1,1,1,1,
+                    //1,1,1,1,1,1,1,
+                    //1,1,1,1,1,
+                    //1,1,1,1};
+
+    //for (i = 0; i < 16; ++i) {
+        //auto &b = brick[i];
+        //b.x = i * 48;
+        //b.y = 11*48;
+        //b.y_original = b.y;
+        //b.y_peak = b.y - b.h/2;
+    //}
+}
+
+void Objects::Contact(int mx, int my, int mw, int mh)
+{
+    for (auto &b:brick) {
+        b.MarioContact(mx, my, mw, mh);
+    }
+
+    //for (auto &c:coin) {
+        //c.MarioContact(mx, my, mw, mh);
+    //}
+}
+
+void Objects::MushroomMove(int marioX, int marioY, int marioW, int marioH, double dt)
+{
+    mushroom.MarioContact(marioX, marioY, marioW, marioH);
+    mushroom.Move(tube, nTubes, brick, nBricks, dt);
+}
+
+void Objects::Draw(int cameraX)
+{
+    //for (auto &c:coin) {
+        //c.Draw(cameraX);
+    //}
+
+    for (auto &b : brick) {
+        b.Draw(cameraX);
+    }
+
+    for (auto &t:tube) {
+        t.Draw(cameraX);
+    }
+
+    for (auto &t:tube) {
+        t.Draw(cameraX);
+    }
+
+    mushroom.Draw(cameraX);
+
+}
+
