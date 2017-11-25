@@ -96,6 +96,20 @@ class Bricks : public SteadyObjects
         //char GetPixel(int x,int y) const;
 };
 
+class StairBricks : public SteadyObjects
+{
+    public:
+        StairBricks();
+        StairBricks(const StairBricks &incoming);
+        ~StairBricks();
+        void CleanUp();
+
+        StairBricks &operator=(const StairBricks &incoming);
+
+        int w, h;
+        void Draw(int cameraX) const;
+};
+
 class QBricks : public Bricks
 {
     public:
@@ -148,10 +162,12 @@ class Objects
     public:
         const int nCoins = 1;
         const int nBricks = 30;
+        const int nStairBricks = 44;
         const int nTubes = 6;
         const int nQBricks = 12;
         Coins coin[1];
         Bricks brick[30];
+        StairBricks stairbrick[44];
         Tubes tube[6];
         QBricks qbrick[12];
 

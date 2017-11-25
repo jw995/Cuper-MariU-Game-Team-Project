@@ -819,6 +819,122 @@ void Bricks::ShiftUp(void)
     //return 0;
 //}
 
+StairBricks::StairBricks()
+{
+    int i, L;
+    char pattern[] = {
+        "byyyyyyyyyyyyyyk"
+        "ybyyyyyyyyyyyykk"
+        "yybyyyyyyyyyykkk"
+        "yyybyyyyyyyykkkk"
+        "yyyybbbbbbbbkkkk"
+        "yyyybbbbbbbbkkkk"
+        "yyyybbbbbbbbkkkk"
+        "yyyybbbbbbbbkkkk"
+        "yyyybbbbbbbbkkkk"
+        "yyyybbbbbbbbkkkk"
+        "yyyybbbbbbbbkkkk"
+        "yyyybbbbbbbbkkkk"
+        "yyykkkkkkkkkbkkk"
+        "yykkkkkkkkkkkbkk"
+        "ykkkkkkkkkkkkkbk"
+        "kkkkkkkkkkkkkkkb"
+    };
+
+    w = 48; h = 48;
+    wid = 16;
+    hei = 16;
+    L = wid * hei;
+    dat = new char [L];
+    for (i = 0; i < L; ++i) {
+        dat[i] = pattern[i];
+    }
+}
+
+StairBricks::StairBricks(const StairBricks &incoming)
+{
+    dat = nullptr;
+    if (dat != incoming.dat) {
+        int i, L;
+        CleanUp();
+        wid = incoming.wid;
+        hei = incoming.hei;
+        x = incoming.x;
+        y = incoming.y;
+        L = wid * hei;
+        dat = new char [L];
+        for (i = 0; i < L; ++i) {
+            dat[i] = incoming.dat[i];
+        }
+    }
+}
+
+StairBricks::~StairBricks()
+{
+    CleanUp();
+}
+
+void StairBricks::CleanUp(void)
+{
+    if (nullptr != dat) {
+        delete [] dat;
+        wid = 0; hei = 0;
+        x = 0; y = 0;
+        dat = nullptr;
+    }
+}
+
+StairBricks &StairBricks::operator=(const StairBricks &incoming)
+{
+    if (dat != incoming.dat) {
+        int i, L;
+        CleanUp();
+        wid = incoming.wid;
+        hei = incoming.hei;
+        x = incoming.x;
+        y = incoming.y;
+        L = wid * hei;
+        dat = new char [L];
+        for (i = 0; i < L; ++i) {
+            dat[i] = incoming.dat[i];
+        }
+    }
+    return * this;
+}
+
+void StairBricks::Draw(int cameraX) const
+{
+    int i, j;
+    glBegin(GL_QUADS);
+
+    for (i = 0; i < 16; ++i) {
+        for (j = 0; j < 16; ++j) {
+            switch (dat[i + hei*j]) {
+                case 'y':
+                    glColor3ub(251,221,194);
+                    DrawRect(x+i*pixelperbit-cameraX, y+j*pixelperbit,
+                            x+(i+1)*pixelperbit-cameraX, y+(j+1)*pixelperbit,
+                            1);
+                    break;
+                case 'b':
+                    glColor3ub(213,60,15);
+                    DrawRect(x+i*pixelperbit-cameraX, y+j*pixelperbit,
+                            x+(i+1)*pixelperbit-cameraX, y+(j+1)*pixelperbit,
+                            1);
+                    break;
+                case 'k':
+                    glColor3ub(0,0,0);
+                    DrawRect(x+i*pixelperbit-cameraX, y+j*pixelperbit,
+                            x+(i+1)*pixelperbit-cameraX, y+(j+1)*pixelperbit,
+                            1);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    glEnd();
+}
 
 QBricks::QBricks()
 {
@@ -1247,6 +1363,14 @@ void Objects::Init(void)
                       8,  8,  8,  4,  4,  4,  4,
                       8,  8,  8,  8,  8,
                       4,  4,  4,  4,  4};
+    int stairbrickx[] = {135,136,136,137,137,137,138,138,138,138,
+                         141,141,141,141,142,142,142,143,143,144,
+                         149,150,150,151,151,151,152,152,152,152,153,153,153,153,
+                         156,156,156,156,157,157,157,158,158,159};
+    int stairbricky[] = {  1,  1,  2,  1,  2,  3,  1,  2,  3,  4,
+                           1,  2,  3,  4,  1,  2,  3,  1,  2,  1,
+                           1,  1,  2,  1,  2,  3,  1,  2,  3,  4,  1,  2,  3,  4,
+                           1,  2,  3,  4,  1,  2,  3,  1,  2,  1};
     int tubex[] = { 28, 38, 46, 57,163,179};
     int tubel[] = {  2,  3,  4,  4,  2,  2};  // layers
     int qbrickx[] = { 22, 24, 23, 79, 95,
@@ -1272,6 +1396,12 @@ void Objects::Init(void)
     brick[1].HaveNCoins = 3;
     brick[2].HaveNCoins = 5;
 
+    i = 0;
+    for (auto &s : stairbrick) {
+        s.x = stairbrickx[i]*48;
+        s.y = 576 - (stairbricky[i]*48+72);
+        ++i;
+    }
     // init coins
     // don't need them now
 	//i = 0;
@@ -1348,6 +1478,10 @@ void Objects::Draw(int cameraX)
         b.Draw(cameraX);
     }
 
+    for (auto &s : stairbrick) {
+        s.Draw(cameraX);
+    }
+
     for (auto &t:tube) {
         t.Draw(cameraX);
     }
@@ -1355,7 +1489,6 @@ void Objects::Draw(int cameraX)
     for (auto &q : qbrick) {
         q.Draw(cameraX);
     }
-
 
 }
 
