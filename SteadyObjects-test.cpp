@@ -7,12 +7,14 @@ int main()
 {
     int winWid, winHei;
     int marioX, marioY, marioW, marioH;
+    int marioVX;
     double dt;
     int cameraX;
     int terminate = 0;
+    int cycle = 0;
     winWid = 768;
     winHei = 576;
-    cameraX = 0;
+    cameraX = 800;
 
     ///////////////////////////////////////////////////////////
     /////////// Code for creating and using Objects ///////////
@@ -22,10 +24,13 @@ int main()
     ///////////////////////////////////////////////////////////
 
 	// test Mario
-	marioX = 1*48;
-	marioY = 10*48;
+	//marioX = 1*48;
+	marioX = 19*48;
+	//marioY = 7*48+24;
+	marioY = 576 - (3*48+72);
 	marioW = 48;
 	marioH = 48;
+	marioVX = 5;
 
 	FsOpenWindow(400,0,winWid,winHei,1);
     FsPassedTime();
@@ -34,7 +39,12 @@ int main()
 		dt = (double)FsPassedTime()/1000.0;
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
-        marioX += 2;
+        cycle++;
+        if (cycle > 70) {
+            marioVX = -marioVX;
+            cycle = 0;
+        }
+        marioX += marioVX;
         //marioY -= 2;
         if (0 != FsGetKeyState(FSKEY_RIGHT)) {
             cameraX += 50;
@@ -45,7 +55,7 @@ int main()
         if (0 != FsGetKeyState(FSKEY_ESC)) {
             terminate = 1;
         }
-        DrawRect(marioX, marioY, marioX + marioW, marioY + marioH,1);
+        DrawRect(marioX-cameraX, marioY, marioX-cameraX + marioW, marioY + marioH,1);
 
 
     ///////////////////////////////////////////////////////////

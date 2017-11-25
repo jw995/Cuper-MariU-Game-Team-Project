@@ -223,9 +223,10 @@ Mushrooms::Mushrooms()
 
     x = 0.0; y = 0.0;
     w = 48; h = 48;
-    vx = 200.0;
-    vy = 0.0;
-    alive = 1;
+    vx = 0.0;
+    vy = -500.0;
+    alive = 0;
+    generated = 0;
     wid = 16;
     hei = 16;
     L = wid * hei;
@@ -323,48 +324,77 @@ void Mushrooms::Draw(int cameraX) const
     glEnd();
 }
 
-void Mushrooms::Move(Tubes tube[], int nTubes, Bricks brick[], int nBricks, double dt)
+void Mushrooms::Move(Tubes tube[], int nTubes,
+                     Bricks brick[], int nBricks,
+                     QBricks qbrick[], int nQBricks,
+                     double dt)
 {
     double g;
     int i;
-    g = -981.0;
-    vy -= g*dt;
 
-    for (i = 0; i < nTubes; ++i) {
-        if (1 == Contact(&tube[i])) {
-            if (vy > 0) {
-                y = tube[i].y - h;
-                vy = 0.0;
-                g = 0;
+    if (alive) {
+        g = -981.0;
+        vy -= g*dt;
+        if (0 <= vx && 200 >= vx) {
+            vx += 2;
+        }
+        else if (0 >= vx && -200 <= vx) {
+            vx -= 2;
+        }
+
+        for (i = 0; i < nTubes; ++i) {
+            if (1 == Contact(&tube[i])) {
+                if (vy > 0) {
+                    y = tube[i].y - h;
+                    vy = 0.0;
+                    g = 0;
+                }
+                break;
             }
-        break;
-        }
-        else if (2 == Contact(&tube[i])
-                 || 4 == Contact(&tube[i])) {
-            vx = -vx;
-            break;
-        }
-    }
-
-    for (i = 0; i < nBricks; ++i) {
-        if (1 == Contact(&brick[i])) {
-            if (vy > 0) {
-                y = brick[i].y - h;
-                vy = 0.0;
-                g = 0;
+            else if (2 == Contact(&tube[i])
+                    || 4 == Contact(&tube[i])) {
+                vx = -vx;
+                break;
             }
-        break;
         }
-        else if (2 == Contact(&brick[i])
-                 || 4 == Contact(&brick[i])) {
-            vx = -vx;
-            break;
-        }
-    }
 
-    // TRICK!!!
-    x += vx*dt/2.0;
-    y += vy*dt/2.0;
+        for (i = 0; i < nBricks; ++i) {
+            if (1 == Contact(&brick[i])) {
+                if (vy > 0) {
+                    y = brick[i].y - h;
+                    vy = 0.0;
+                    g = 0;
+                }
+                break;
+            }
+            else if (2 == Contact(&brick[i])
+                    || 4 == Contact(&brick[i])) {
+                vx = -vx;
+                break;
+            }
+        }
+
+
+        for (i = 0; i < nQBricks; ++i) {
+            if (1 == Contact(&qbrick[i])) {
+                if (vy > 0) {
+                    y = qbrick[i].y - h;
+                    vy = 0.0;
+                    g = 0;
+                }
+                break;
+            }
+            else if (2 == Contact(&qbrick[i])
+                    || 4 == Contact(&qbrick[i])) {
+                vx = -vx;
+                break;
+            }
+        }
+
+        // TRICK!!!
+        x += vx*dt/2.0;
+        y += vy*dt/2.0;
+    }
 }
 
 int Mushrooms::Contact(Tubes * tube) const
@@ -386,6 +416,11 @@ void Mushrooms::MarioContact(int mx, int my, int mw, int mh)
     if (0 != CheckContact(mx, my, mw, mh,
                           x, y, w, h)) {
         alive = 0;
+    }
+    if (0 == generated && 0 == alive
+        && 0 != CheckContact(mx, my, mw, mh, x, y, w, h)) {
+        alive = 1;
+        generated = 1;
     }
 }
 
@@ -622,7 +657,6 @@ Bricks::Bricks()
         "kkkkkkkkkkkkkkkk"
     };
 
-    //x = 0; y = 0;
     w = 48; h = 48;
     shift = 0;
     reachpeak = 0;
@@ -738,13 +772,17 @@ void Bricks::Draw(int cameraX) const
     glEnd();
 }
 
-void Bricks::MarioContact(int mx, int my, int mw, int mh)
+void Bricks::MarioContact(int mx, int my, int mw, int mh, Coins coin[])
 {
     if (1 == CheckContact(mx, my, mw, mh,
                           x,  y, w, h)) {
         // Brick should shift up and send x, y position to Monster class
         //Monster_on_bricks_hit(x, y);
         shift = 1;
+        if (0 < HaveNCoins && 0 == coin[0].exist) {
+            coin[0].CoinFly(x, y);
+            --HaveNCoins;
+        }
     }
 
     if (1 == shift) {
@@ -781,6 +819,220 @@ void Bricks::ShiftUp(void)
     //return 0;
 //}
 
+
+QBricks::QBricks()
+{
+    int i, L;
+    char pattern[] = {
+        "kooooooooooooook"
+        "oyyyyyyyyyyyyyyk"
+        "oykyyyyyyyyyykyk"
+        "oyyyyoooooyyyyyk"
+        "oyyyookkkooyyyyk"
+        "oyyyookyyookyyyk"
+        "oyyyookyyookyyyk"
+        "oyyyykkyoookyyyk"
+        "oyyyyyyookkkyyyk"
+        "oyyyyyyookyyyyyk"
+        "oyyyyyyykkyyyyyk"
+        "oyyyyyyooyyyyyyk"
+        "oyyyyyyookyyyyyk"
+        "oykyyyyykkyyykyk"
+        "oyyyyyyyyyyyyyyk"
+        "kkkkkkkkkkkkkkkk"
+    };
+
+    w = 48; h = 48;
+    shift = 0;
+    reachpeak = 0;
+    fixed = 0;
+    patternchanged = 0;
+    wid = 16;
+    hei = 16;
+    L = wid * hei;
+    dat = new char [L];
+    for (i = 0; i < L; ++i) {
+        dat[i] = pattern[i];
+    }
+}
+
+QBricks::QBricks(const QBricks &incoming)
+{
+    dat = nullptr;
+    if (dat != incoming.dat) {
+        int i, L;
+        CleanUp();
+        wid = incoming.wid;
+        hei = incoming.hei;
+        x = incoming.x;
+        y = incoming.y;
+        L = wid * hei;
+        dat = new char [L];
+        for (i = 0; i < L; ++i) {
+            dat[i] = incoming.dat[i];
+        }
+    }
+}
+QBricks::~QBricks()
+{
+    CleanUp();
+}
+
+void QBricks::CleanUp(void)
+{
+    if (nullptr != dat) {
+        delete [] dat;
+        wid = 0; hei = 0;
+        x = 0; y = 0;
+        dat = nullptr;
+    }
+}
+
+QBricks &QBricks::operator=(const QBricks &incoming)
+{
+    if (dat != incoming.dat) {
+        int i, L;
+        CleanUp();
+        wid = incoming.wid;
+        hei = incoming.hei;
+        x = incoming.x;
+        y = incoming.y;
+        L = wid * hei;
+        dat = new char [L];
+        for (i = 0; i < L; ++i) {
+            dat[i] = incoming.dat[i];
+        }
+    }
+    return * this;
+}
+
+void QBricks::Draw(int cameraX) const
+{
+    int i, j;
+    glBegin(GL_QUADS);
+
+    if (0 == patternchanged) {
+        for (i = 0; i < 16; ++i) {
+            for (j = 0; j < 16; ++j) {
+                switch (dat[i + hei*j]) {
+                    case 'y':
+                        glColor3ub(253,147,49);
+                        DrawRect(x+i*pixelperbit-cameraX, y+j*pixelperbit,
+                                x+(i+1)*pixelperbit-cameraX, y+(j+1)*pixelperbit,
+                                1);
+                        break;
+                    case 'o':
+                        glColor3ub(218,71,19);
+                        DrawRect(x+i*pixelperbit-cameraX, y+j*pixelperbit,
+                                x+(i+1)*pixelperbit-cameraX, y+(j+1)*pixelperbit,
+                                1);
+                        break;
+                    case 'k':
+                        glColor3ub(0,0,0);
+                        DrawRect(x+i*pixelperbit-cameraX, y+j*pixelperbit,
+                                x+(i+1)*pixelperbit-cameraX, y+(j+1)*pixelperbit,
+                                1);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+    else {
+        for (i = 0; i < 16; ++i) {
+            for (j = 0; j < 16; ++j) {
+                switch (dat[i + hei*j]) {
+                    case 'b':
+                        glColor3ub(218,71,19);
+                        DrawRect(x+i*pixelperbit-cameraX, y+j*pixelperbit,
+                                x+(i+1)*pixelperbit-cameraX, y+(j+1)*pixelperbit,
+                                1);
+                        break;
+                    case 'k':
+                        glColor3ub(0,0,0);
+                        DrawRect(x+i*pixelperbit-cameraX, y+j*pixelperbit,
+                                x+(i+1)*pixelperbit-cameraX, y+(j+1)*pixelperbit,
+                                1);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+    glEnd();
+}
+void QBricks::MarioContact(int mx, int my, int mw, int mh)
+{
+    if (1 == CheckContact(mx, my, mw, mh,
+                          x,  y, w, h)) {
+        // Brick should shift up and send x, y position to Monster class
+        //Monster_on_bricks_hit(x, y);
+        shift = 1;
+        ChangePattern();
+        patternchanged = 1;
+    }
+
+    if (1 == shift && 0 == fixed) {
+        ShiftUp();
+    }
+}
+void QBricks::ShiftUp(void)
+{
+    int shiftspeed = 2;
+
+    if (y > y_peak && 0 == reachpeak) {
+        y -= shiftspeed;
+    }
+    else {
+        y += shiftspeed;
+    }
+
+    if (y == y_original) {
+        shift = 0;
+        reachpeak = 0;
+        fixed = 1;
+    }
+
+    if (y <= y_peak) {
+        reachpeak = 1;
+    }
+
+}
+
+void QBricks::ChangePattern(void)
+{
+    int i, L;
+    char pattern[] = {
+        " kkkkkkkkkkkkkk "
+        "kbbbbbbbbbbbbbbk"
+        "kbkbbbbbbbbbbkbk"
+        "kbbbbbbbbbbbbbbk"
+        "kbbbbbbbbbbbbbbk"
+        "kbbbbbbbbbbbbbbk"
+        "kbbbbbbbbbbbbbbk"
+        "kbbbbbbbbbbbbbbk"
+        "kbbbbbbbbbbbbbbk"
+        "kbbbbbbbbbbbbbbk"
+        "kbbbbbbbbbbbbbbk"
+        "kbbbbbbbbbbbbbbk"
+        "kbbbbbbbbbbbbbbk"
+        "kbkbbbbbbbbbbkbk"
+        "kbbbbbbbbbbbbbbk"
+        " kkkkkkkkkkkkkk "
+    };
+
+    w = 48; h = 48;
+    wid = 16;
+    hei = 16;
+    L = wid * hei;
+    dat = new char [L];
+    for (i = 0; i < L; ++i) {
+        dat[i] = pattern[i];
+    }
+}
+
 Coins::Coins()
 {
     int i, L;
@@ -805,7 +1057,7 @@ Coins::Coins()
 
     x = 0; y = 0;
     w = 48; h = 48;
-    exist = 1;
+    exist = 0;
     wid = 16;
     hei = 16;
     L = wid * hei;
@@ -892,11 +1144,12 @@ Coins &Coins::operator=(const Coins &incoming)
     //}
 //}
 
-void Coins::Draw(int cameraX) const
+void Coins::Draw(int cameraX)
 {
-    if (exist == 1) {
-        glBegin(GL_QUADS);
+    if (exist) {
         int i, j;
+        glBegin(GL_QUADS);
+        ShiftUp();
 
         for (i = 0; i < 16; ++i) {
             for (j = 0; j < 16; ++j) {
@@ -928,13 +1181,51 @@ void Coins::Draw(int cameraX) const
     }
 }
 
-void Coins::MarioContact(int mx, int my, int mw, int mh)
+void Coins::CoinFly(int flyx, int flyy)
 {
-    if (0 != CheckContact(mx, my, mw, mh,
-                          x,  y, 48, 48)) {
-        exist = 0;
+    if (0 == exist) {
+        exist = 1;
+        x = flyx;
+        y = flyy;
+        y_peak = flyy - 3*48;
     }
 }
+
+void Coins::ShiftUp(void)
+{
+    int shiftspeed = 8;
+
+    if (y > y_peak) {
+        y -= shiftspeed;
+    }
+    else {
+        exist = 0;
+    }
+    //if (y > y_peak && 0 == reachpeak) {
+        //y -= shiftspeed;
+    //}
+    //else {
+        //y += shiftspeed;
+    //}
+
+    //if (y == y_original) {
+        //shift = 0;
+        //reachpeak = 0;
+    //}
+
+    //if (y <= y_peak) {
+        //reachpeak = 1;
+    //}
+}
+
+//void Coins::MarioContact(int mx, int my, int mw, int mh)
+//{
+    //if (0 != CheckContact(mx, my, mw, mh,
+                          //x,  y, 48, 48)) {
+        //exist = 0;
+    //}
+//}
+
 //char Coins::GetPixel(int x, int y) const
 //{
     //if(0 <= x && x < wid && 0 <= y && y < hei) {
@@ -950,23 +1241,36 @@ void Objects::Init(void)
                      81, 82, 83, 84, 85, 86, 87, 88,
                      92, 93, 94, 95,101,102,119,
                     122,123,124,129,132,
-                    130,131,173,174};
+                    130,131,168,169,171};
     int bricky[] = {  4,  4,  4,  4,  4,
                       8,  8,  8,  8,  8,  8,  8,  8,
                       8,  8,  8,  4,  4,  4,  4,
                       8,  8,  8,  8,  8,
-                      4,  4,  4,  4};
+                      4,  4,  4,  4,  4};
     int tubex[] = { 28, 38, 46, 57,163,179};
     int tubel[] = {  2,  3,  4,  4,  2,  2};  // layers
+    int qbrickx[] = { 22, 24, 23, 79, 95,
+                     107,110,113,110,130,
+                     131,170};
+    int qbricky[] = {  4,  4,  8,  4,  8,
+                       4,  4,  4,  8,  8,
+                       8,  4};
+
+    mushroom.x = 22*48;
+    mushroom.y = 576 - (4*48+72);
+
     // init bricks
     i = 0;
     for (auto &b : brick) {
         b.x = brickx[i]*48;
-        b.y = 576 - ((bricky[i]+1)*48+72);
+        b.y = 576 - (bricky[i]*48+72);
         b.y_original = b.y;
         b.y_peak = b.y - b.h/2;
         ++i;
     }
+    brick[0].HaveNCoins = 2;
+    brick[1].HaveNCoins = 3;
+    brick[2].HaveNCoins = 5;
 
     // init coins
     // don't need them now
@@ -984,12 +1288,18 @@ void Objects::Init(void)
         t.x = tubex[i]*48;
         t.y = 576 - (t.layers*48+72);
         t.UpdateHeight();
-        //i += 8;
         ++i;
     }
 
-    mushroom.x = 3*48.0;
-    mushroom.y = 7*48.0;
+    i = 0;
+    for (auto &q : qbrick) {
+        q.x = qbrickx[i]*48;
+        q.y = 576 - (qbricky[i]*48+72);
+        q.y_original = q.y;
+        q.y_peak = q.y - q.h/2;
+        ++i;
+    }
+
 
     // Test code, just ignore them
     //int brickx[] = {1,1,1,1,1,
@@ -1009,8 +1319,12 @@ void Objects::Init(void)
 
 void Objects::Contact(int mx, int my, int mw, int mh)
 {
-    for (auto &b:brick) {
-        b.MarioContact(mx, my, mw, mh);
+    for (auto &b : brick) {
+        b.MarioContact(mx, my, mw, mh, coin);
+    }
+
+    for (auto &q : qbrick) {
+        q.MarioContact(mx, my, mw, mh);
     }
 
     //for (auto &c:coin) {
@@ -1021,14 +1335,14 @@ void Objects::Contact(int mx, int my, int mw, int mh)
 void Objects::MushroomMove(int marioX, int marioY, int marioW, int marioH, double dt)
 {
     mushroom.MarioContact(marioX, marioY, marioW, marioH);
-    mushroom.Move(tube, nTubes, brick, nBricks, dt);
+    mushroom.Move(tube, nTubes, brick, nBricks, qbrick, nQBricks, dt);
 }
 
 void Objects::Draw(int cameraX)
 {
-    //for (auto &c:coin) {
-        //c.Draw(cameraX);
-    //}
+    coin[0].Draw(cameraX);
+
+    mushroom.Draw(cameraX);
 
     for (auto &b : brick) {
         b.Draw(cameraX);
@@ -1038,11 +1352,10 @@ void Objects::Draw(int cameraX)
         t.Draw(cameraX);
     }
 
-    for (auto &t:tube) {
-        t.Draw(cameraX);
+    for (auto &q : qbrick) {
+        q.Draw(cameraX);
     }
 
-    mushroom.Draw(cameraX);
 
 }
 

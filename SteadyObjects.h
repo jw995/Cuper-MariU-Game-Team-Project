@@ -46,6 +46,32 @@ class Tubes : public SteadyObjects
         //char GetPixel(int x,int y) const;
 };
 
+class Coins : public SteadyObjects
+{
+    public:
+        Coins();
+        Coins(const Coins &incoming);
+        ~Coins();
+        void CleanUp();
+
+        Coins &operator=(const Coins &incoming);
+
+        int w, h;
+        //int shift, y_peak, y_original, reachpeak;
+        int y_peak;
+        int exist;
+
+        //int GetWidth(void) const;
+        //int GetHeight(void) const;
+        //void SetPixel(const int x,const int y,const char c);
+
+        //void Print(void) const;
+        void Draw(int cameraX);
+        void CoinFly(int x, int y);
+        void ShiftUp(void);
+        //char GetPixel(int x,int y) const;
+        //void MarioContact(int mx, int my, int mw, int mh);
+};
 
 
 class Bricks : public SteadyObjects
@@ -62,11 +88,31 @@ class Bricks : public SteadyObjects
 
         int w, h;
         int shift, y_peak, y_original, reachpeak;
+        int HaveNCoins;
         //void Print(void) const;
         void Draw(int cameraX) const;
-        void MarioContact(int mx, int my, int mw, int mh);
+        void MarioContact(int mx, int my, int mw, int mh, Coins * coin);
         void ShiftUp();
         //char GetPixel(int x,int y) const;
+};
+
+class QBricks : public Bricks
+{
+    public:
+        QBricks();
+        QBricks(const QBricks &incoming);
+        ~QBricks();
+        void CleanUp();
+
+        QBricks &operator=(const QBricks &incoming);
+
+        int w, h;
+        int fixed, patternchanged;
+        int shift, y_peak, y_original, reachpeak;
+        void Draw(int cameraX) const;
+        void MarioContact(int mx, int my, int mw, int mh);
+        void ShiftUp(void);
+        void ChangePattern(void);
 };
 
 class Mushrooms
@@ -85,45 +131,29 @@ class Mushrooms
         double x, y, vx, vy;
         int w, h;
         int alive;
+        int generated;
         void Draw(int cameraX) const;
-        void Move(Tubes tube[], int nTubes, Bricks brick[], int nBricks, double dt);
+        void Move(Tubes tube[], int nTubes,
+                  Bricks brick[], int nBricks,
+                  QBricks qbrick[], int nQBricks,
+                  double dt);
         int Contact(Tubes * tube) const;
         int Contact(Bricks * brick) const;
         void MarioContact(int mx, int my, int mw, int mh);
 };
 
-class Coins : public SteadyObjects
-{
-    public:
-        Coins();
-        Coins(const Coins &incoming);
-        ~Coins();
-        void CleanUp();
-
-        Coins &operator=(const Coins &incoming);
-
-        int w, h;
-        int exist;
-
-        //int GetWidth(void) const;
-        //int GetHeight(void) const;
-        //void SetPixel(const int x,const int y,const char c);
-
-        //void Print(void) const;
-        void Draw(int cameraX) const;
-        //char GetPixel(int x,int y) const;
-        void MarioContact(int mx, int my, int mw, int mh);
-};
 
 class Objects
 {
     public:
-        //const int nCoins = 5;
-        const int nBricks = 29;
+        const int nCoins = 1;
+        const int nBricks = 30;
         const int nTubes = 6;
-        //Coins coin[5];
-        Bricks brick[29];
+        const int nQBricks = 12;
+        Coins coin[1];
+        Bricks brick[30];
         Tubes tube[6];
+        QBricks qbrick[12];
 
         Mushrooms mushroom;
 
