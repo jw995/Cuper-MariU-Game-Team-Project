@@ -1,0 +1,5 @@
+﻿  GameSetting.cpp
+d:\岳翰\2017fall courses\24780 engineer computation\term project\setting\setting\gamesetting.cpp(60): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+d:\岳翰\2017fall courses\24780 engineer computation\term project\setting\setting\gamesetting.cpp(63): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+  Setting.vcxproj -> D:\岳翰\2017Fall Courses\24780 Engineer Computation\Term Project\Setting\Debug\Setting.exe
+  Setting.vcxproj -> D:\岳翰\2017Fall Courses\24780 Engineer Computation\Term Project\Setting\Debug\Setting.pdb (Full PDB)

@@ -1,5 +1,10 @@
-﻿  GameSetting.cpp
-d:\岳翰\2017fall courses\24780 engineer computation\term project\setting\setting\gamesetting.cpp(60): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-d:\岳翰\2017fall courses\24780 engineer computation\term project\setting\setting\gamesetting.cpp(63): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-  Setting.vcxproj -> D:\岳翰\2017Fall Courses\24780 Engineer Computation\Term Project\Setting\Debug\Setting.exe
-  Setting.vcxproj -> D:\岳翰\2017Fall Courses\24780 Engineer Computation\Term Project\Setting\Debug\Setting.pdb (Full PDB)
+﻿  fssimplewindow.cpp
+c:\users\nelson\documents\github\24780-term-project\setting\setting\fssimplewindow.cpp(897): warning C4018: '<': signed/unsigned mismatch
+c:\users\nelson\documents\github\24780-term-project\setting\setting\fssimplewindow.cpp(1500): warning C4800: 'int': forcing value to bool 'true' or 'false' (performance warning)
+  stdafx.cpp
+  GameSetting.cpp
+c:\users\nelson\documents\github\24780-term-project\setting\setting\gamesetting.cpp(60): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+c:\users\nelson\documents\github\24780-term-project\setting\setting\gamesetting.cpp(63): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+  Generating Code...
+  Setting.vcxproj -> C:\Users\Nelson\Documents\GitHub\24780-Term-Project\Setting\Debug\Setting.exe
+  Setting.vcxproj -> C:\Users\Nelson\Documents\GitHub\24780-Term-Project\Setting\Debug\Setting.pdb (Full PDB)
