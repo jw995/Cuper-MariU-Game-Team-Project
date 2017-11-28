@@ -26,6 +26,7 @@ int main(void)
 {    
 	// set camera
 	int camera_x = 0;
+	
 
 	// initialization
 	CharBitmap bmp;
@@ -37,6 +38,7 @@ int main(void)
 
 	FsOpenWindow(16, 16, 768, 576, 1);
 	TX.set();
+
 
 	while (FsInkey() != FSKEY_ESC)
 	{
@@ -58,18 +60,25 @@ int main(void)
 		{
 			camera_x += 100;
 		}
+		int player_x = camera_x;
+		int player_y = 200;
 
 		/////////////////////// draw everything ////////////////////
-	        // draw background
+		
+	    // draw background
 		bmp.Draw_bgd();
 
 		// texture mapping goes here 
 		TX.Draw_texture(camera_x);
+		TX.Draw_soji(camera_x);
 
 		// Bitmap drawing goes here
 		bmp.Draw_everything(camera_x);
-		
 
+		// Draw edding 
+		Draw_edding(player_x, player_y, camera_x, bmp, TX);
+		
+		
 		FsSwapBuffers();
 
 		FsSleep(10);
