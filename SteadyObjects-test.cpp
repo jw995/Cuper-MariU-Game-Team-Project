@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string>
 #include "fssimplewindow.h"
 #include "SteadyObjects.h"
 
@@ -7,7 +8,9 @@ int main()
 {
     int winWid, winHei;
     int marioX, marioY, marioW, marioH;
-    int marioVX;
+    std::string marioState ("super");
+    int marioVX, marioVY;
+    int block_hit_x;
     double dt;
     int cameraX;
     int terminate = 0;
@@ -24,13 +27,13 @@ int main()
     ///////////////////////////////////////////////////////////
 
 	// test Mario
-	//marioX = 1*48;
 	marioX = 19*48;
 	//marioY = 7*48+24;
 	marioY = 576 - (3*48+72);
 	marioW = 48;
 	marioH = 48;
-	marioVX = 5;
+    marioVX = 5;
+    //marioVY = 5;
 
 	FsOpenWindow(400,0,winWid,winHei,1);
     FsPassedTime();
@@ -42,9 +45,11 @@ int main()
         cycle++;
         if (cycle > 70) {
             marioVX = -marioVX;
+            //marioVY = -marioVY;
             cycle = 0;
         }
         marioX += marioVX;
+        //marioY += marioVY;
         //marioY -= 2;
         if (0 != FsGetKeyState(FSKEY_RIGHT)) {
             cameraX += 50;
@@ -55,12 +60,15 @@ int main()
         if (0 != FsGetKeyState(FSKEY_ESC)) {
             terminate = 1;
         }
+
+        glColor3ub(0,0,0);
         DrawRect(marioX-cameraX, marioY, marioX-cameraX + marioW, marioY + marioH,1);
 
 
     ///////////////////////////////////////////////////////////
     /////////// Code for creating and using Objects ///////////
-        objects.Contact(marioX, marioY, marioW, marioH);
+        /* Return the x position of hit block */
+        block_hit_x = objects.Contact(marioX, marioY, marioW, marioH, marioState);
         // It's a trick!!
         // Call twice to increase resolution
         objects.MushroomMove(marioX, marioY, marioW, marioH, dt);

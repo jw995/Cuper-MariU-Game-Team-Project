@@ -1,4 +1,7 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string>
+#include <array>
 #include "fssimplewindow.h"
 #include "SteadyObjects.h"
 
@@ -236,24 +239,6 @@ Mushrooms::Mushrooms()
     }
 }
 
-Mushrooms::Mushrooms(const Mushrooms &incoming)
-{
-    dat = nullptr;
-    if (dat != incoming.dat) {
-        int i, L;
-        CleanUp();
-        wid = incoming.wid;
-        hei = incoming.hei;
-        x = incoming.x;
-        y = incoming.y;
-        L = wid * hei;
-        dat = new char [L];
-        for (i = 0; i < L; ++i) {
-            dat[i] = incoming.dat[i];
-        }
-    }
-}
-
 Mushrooms::~Mushrooms()
 {
     CleanUp();
@@ -266,24 +251,6 @@ void Mushrooms::CleanUp()
     }
     wid = 0; hei = 0; x = 0; y = 0;
     dat = nullptr;
-}
-
-Mushrooms &Mushrooms::operator=(const Mushrooms &incoming)
-{
-    if (dat != incoming.dat) {
-        int i, L;
-        CleanUp();
-        wid = incoming.wid;
-        hei = incoming.hei;
-        x = incoming.x;
-        y = incoming.y;
-        L = wid * hei;
-        dat = new char [L];
-        for (i = 0; i < L; ++i) {
-            dat[i] = incoming.dat[i];
-        }
-    }
-    return * this;
 }
 
 void Mushrooms::Draw(int cameraX) const
@@ -418,7 +385,8 @@ void Mushrooms::MarioContact(int mx, int my, int mw, int mh)
         alive = 0;
     }
     if (0 == generated && 0 == alive
-        && 0 != CheckContact(mx, my, mw, mh, x, y, w, h)) {
+        && 0 != CheckContact(mx, my, mw, mh, x, y, w, h)
+        && (abs((int)mx - (int)x) <= (mw/2))) {
         alive = 1;
         generated = 1;
     }
@@ -475,25 +443,6 @@ Tubes::Tubes()
     }
 }
 
-
-Tubes::Tubes(const Tubes &incoming)
-{
-    dat = nullptr;
-    if (dat != incoming.dat) {
-        int i, L;
-        CleanUp();
-        wid = incoming.wid;
-        hei = incoming.hei;
-        x = incoming.x;
-        y = incoming.y;
-        L = wid * hei;
-        dat = new char [L];
-        for (i = 0; i < L; ++i) {
-            dat[i] = incoming.dat[i];
-        }
-    }
-}
-
 Tubes::~Tubes()
 {
     CleanUp();
@@ -507,42 +456,6 @@ void Tubes::CleanUp()
         dat = nullptr;
     }
 }
-
-Tubes &Tubes::operator=(const Tubes &incoming)
-{
-    if (dat != incoming.dat) {
-        int i, L;
-        CleanUp();
-        wid = incoming.wid;
-        hei = incoming.hei;
-        x = incoming.x;
-        y = incoming.y;
-        L = wid * hei;
-        dat = new char [L];
-        for (i = 0; i < L; ++i) {
-            dat[i] = incoming.dat[i];
-        }
-    }
-    return * this;
-}
-
-//void Tubes::SetPixel(const int x,const int y,const char c)
-//{
-    //if (0 <= x && 32 >= x && 0 <= y && 32 >= y ) {
-        //dat[x + hei*y] = c;
-    //}
-//}
-
-//void Tubes::Print(void) const
-//{
-    //int x,y;
-    //for(y = 0; y < hei; y++) {
-        //for(x = 0; x < wid; x++) {
-            //printf("%c",GetPixel(x, y));
-        //}
-        //printf("\n");
-    //}
-//}
 
 void Tubes::Draw(int cameraX) const
 {
@@ -627,13 +540,154 @@ void Tubes::UpdateHeight()
     h = layers * 48;
 }
 
-//char Tubes::GetPixel(int x,int y) const
-//{
-    //if(0 <= x && x < wid && 0 <= y && y < hei) {
-        //return dat[y * wid + x];
-    //}
-    //return 0;
-//}
+BrokenBricks::BrokenBricks()
+{
+    int i, L;
+    char pattern[] = {
+        "       bbb      "
+        "      bkbkb     "
+        "     bbbkbbb    "
+        "    bbbkbbbk    "
+        "    bbkbbbkb    "
+        "    bkbkbkb     "
+        "     bbbkb      "
+        "      bkb       "
+        "                "
+        "                "
+        "                "
+        "                "
+        "                "
+        "                "
+        "                "
+        "                "
+    };
+
+    originalX = 0;
+    x = 0, y = 0;
+    vx = 150, vy = -300;
+    diffy = 0;
+    fly = 0;
+    wid = 16;
+    hei = 16;
+    L = wid * hei;
+    dat = new char [L];
+    for (i = 0; i < L; ++i) {
+        dat[i] = pattern[i];
+    }
+}
+
+BrokenBricks::~BrokenBricks()
+{
+    CleanUp();
+}
+
+void BrokenBricks::CleanUp()
+{
+    if (nullptr != dat) {
+        delete [] dat;
+        wid = 0; hei = 0;
+        x = 0; y = 0;
+        vx = 0, vy = 0;
+        dat = nullptr;
+    }
+}
+
+void BrokenBricks::Draw(int cameraX) const
+{
+    int i, j;
+    int dx;
+    glBegin(GL_QUADS);
+
+    if (fly == 1) {
+        dx = x - originalX;
+        for (i = 0; i < 16; ++i) {
+            for (j = 0; j < 16; ++j) {
+                switch (dat[i + hei*j]) {
+                    case 'b':
+                        glColor3ub(213,60,15);
+                        DrawRect(x+i*pixelperbit-cameraX,
+                                y+j*pixelperbit,
+                                x+(i+1)*pixelperbit-cameraX,
+                                y+(j+1)*pixelperbit,
+                                1);
+                        // vertical mirrow
+                        DrawRect(x-2*dx+i*pixelperbit-cameraX,
+                                y+j*pixelperbit,
+                                x-2*dx+(i+1)*pixelperbit-cameraX,
+                                y+(j+1)*pixelperbit,
+                                1);
+                        // horizontal mirrow
+                        DrawRect(x+i*pixelperbit-cameraX,
+                                y+diffy+j*pixelperbit,
+                                x+(i+1)*pixelperbit-cameraX,
+                                y+diffy+(j+1)*pixelperbit,
+                                1);
+                        // vertical and horizontal mirrow
+                        DrawRect(x-2*dx+i*pixelperbit-cameraX,
+                                y+diffy+j*pixelperbit,
+                                x-2*dx+(i+1)*pixelperbit-cameraX,
+                                y+diffy+(j+1)*pixelperbit,
+                                1);
+                        break;
+                    case 'k':
+                        glColor3ub(0,0,0);
+                        DrawRect(x+i*pixelperbit-cameraX,
+                                y+j*pixelperbit,
+                                x+(i+1)*pixelperbit-cameraX,
+                                y+(j+1)*pixelperbit,
+                                1);
+                        // vertical mirrow
+                        DrawRect(x-2*dx+i*pixelperbit-cameraX,
+                                y+j*pixelperbit,
+                                x-2*dx+(i+1)*pixelperbit-cameraX,
+                                y+(j+1)*pixelperbit,
+                                1);
+                        // horizontal mirrow
+                        DrawRect(x+i*pixelperbit-cameraX,
+                                y+diffy+j*pixelperbit,
+                                x+(i+1)*pixelperbit-cameraX,
+                                y+diffy+(j+1)*pixelperbit,
+                                1);
+                        // vertical and horizontal mirrow
+                        DrawRect(x-2*dx+i*pixelperbit-cameraX,
+                                y+diffy+j*pixelperbit,
+                                x-2*dx+(i+1)*pixelperbit-cameraX,
+                                y+diffy+(j+1)*pixelperbit,
+                                1);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+    glEnd();
+}
+
+void BrokenBricks::Move(double dt)
+{
+    double g;
+
+    if (fly) {
+        g = -981.0;
+        vy -= g*dt;
+        diffy += 5;
+        if (0 <= vx && 200 >= vx) {
+            vx += 2;
+        }
+        else if (0 >= vx && -200 <= vx) {
+            vx -= 2;
+        }
+        x += vx*dt;
+        y += vy*dt;
+    }
+    if (y > 576) {
+        fly = 0;
+        diffy = 0;
+        vx = 150;
+        vy = -300;
+    }
+}
 
 Bricks::Bricks()
 {
@@ -660,30 +714,13 @@ Bricks::Bricks()
     w = 48; h = 48;
     shift = 0;
     reachpeak = 0;
+    broken = 0;
     wid = 16;
     hei = 16;
     L = wid * hei;
     dat = new char [L];
     for (i = 0; i < L; ++i) {
         dat[i] = pattern[i];
-    }
-}
-
-Bricks::Bricks(const Bricks &incoming)
-{
-    dat = nullptr;
-    if (dat != incoming.dat) {
-        int i, L;
-        CleanUp();
-        wid = incoming.wid;
-        hei = incoming.hei;
-        x = incoming.x;
-        y = incoming.y;
-        L = wid * hei;
-        dat = new char [L];
-        for (i = 0; i < L; ++i) {
-            dat[i] = incoming.dat[i];
-        }
     }
 }
 
@@ -702,92 +739,77 @@ void Bricks::CleanUp(void)
     }
 }
 
-Bricks &Bricks::operator=(const Bricks &incoming)
-{
-    if (dat != incoming.dat) {
-        int i, L;
-        CleanUp();
-        wid = incoming.wid;
-        hei = incoming.hei;
-        x = incoming.x;
-        y = incoming.y;
-        L = wid * hei;
-        dat = new char [L];
-        for (i = 0; i < L; ++i) {
-            dat[i] = incoming.dat[i];
-        }
-    }
-    return * this;
-}
-
-//void Bricks::SetPixel(const int x,const int y,const char c)
-//{
-    //if (0 <= x && 16 >= x && 0 <= y && 16 >= y ) {
-        //dat[x + hei*y] = c;
-    //}
-//}
-
-//void Bricks::Print(void) const
-//{
-    //int x,y;
-    //for(y = 0; y < hei; y++) {
-        //for(x = 0; x < wid; x++) {
-            //printf("%c",GetPixel(x, y));
-        //}
-        //printf("\n");
-    //}
-//}
-
 void Bricks::Draw(int cameraX) const
 {
     int i, j;
     glBegin(GL_QUADS);
 
-    for (i = 0; i < 16; ++i) {
-        for (j = 0; j < 16; ++j) {
-            switch (dat[i + hei*j]) {
-                case 'y':
-                    glColor3ub(251,221,194);
-                    DrawRect(x+i*pixelperbit-cameraX, y+j*pixelperbit,
-                            x+(i+1)*pixelperbit-cameraX, y+(j+1)*pixelperbit,
-                            1);
-                    break;
-                case 'b':
-                    glColor3ub(213,60,15);
-                    DrawRect(x+i*pixelperbit-cameraX, y+j*pixelperbit,
-                            x+(i+1)*pixelperbit-cameraX, y+(j+1)*pixelperbit,
-                            1);
-                    break;
-                case 'k':
-                    glColor3ub(0,0,0);
-                    DrawRect(x+i*pixelperbit-cameraX, y+j*pixelperbit,
-                            x+(i+1)*pixelperbit-cameraX, y+(j+1)*pixelperbit,
-                            1);
-                    break;
-                default:
-                    break;
+    if (broken == 0) {
+        for (i = 0; i < 16; ++i) {
+            for (j = 0; j < 16; ++j) {
+                switch (dat[i + hei*j]) {
+                    case 'y':
+                        glColor3ub(251,221,194);
+                        DrawRect(x+i*pixelperbit-cameraX, y+j*pixelperbit,
+                                 x+(i+1)*pixelperbit-cameraX, y+(j+1)*pixelperbit,
+                                 1);
+                        break;
+                    case 'b':
+                        glColor3ub(213,60,15);
+                        DrawRect(x+i*pixelperbit-cameraX, y+j*pixelperbit,
+                                 x+(i+1)*pixelperbit-cameraX, y+(j+1)*pixelperbit,
+                                 1);
+                        break;
+                    case 'k':
+                        glColor3ub(0,0,0);
+                        DrawRect(x+i*pixelperbit-cameraX, y+j*pixelperbit,
+                                 x+(i+1)*pixelperbit-cameraX, y+(j+1)*pixelperbit,
+                                 1);
+                        break;
+                    default:
+                        break;
+                }
             }
         }
     }
     glEnd();
 }
 
-void Bricks::MarioContact(int mx, int my, int mw, int mh, Coins coin[])
+int Bricks::MarioContact(int mx, int my, int mw, int mh, std::string ms,
+                          Coins coin[], BrokenBricks brokenbrick[])
 {
+    int block_hit_x = -1;
     if (1 == CheckContact(mx, my, mw, mh,
-                          x,  y, w, h)) {
+                          x,  y, w, h)
+        && (abs(mx - x) <= (mw/2))) {
         // Brick should shift up and send x, y position to Monster class
-        //Monster_on_bricks_hit(x, y);
+        // Monster_on_bricks_hit(x, y);
         shift = 1;
-        if (0 < HaveNCoins && 0 == coin[0].exist) {
+
+        if (broken == 0 && !ms.compare("super") && HaveNCoins == -1) {
+            broken = 1;
+            if (brokenbrick->fly == 0) {
+                brokenbrick->fly = 1;
+                brokenbrick->x = x;
+                brokenbrick->originalX = x;
+                brokenbrick->y = y;
+            }
+        }
+
+        if (-1 < HaveNCoins && 0 == coin[0].exist) {
             coin[0].CoinFly(x, y);
             --HaveNCoins;
         }
+
+        block_hit_x = x;
+
     }
 
     if (1 == shift) {
         ShiftUp();
     }
+
+    return block_hit_x;
 }
 
 void Bricks::ShiftUp(void)
@@ -810,14 +832,6 @@ void Bricks::ShiftUp(void)
         reachpeak = 1;
     }
 }
-
-//char Bricks::GetPixel(int x,int y) const
-//{
-    //if(0 <= x && x < wid && 0 <= y && y < hei) {
-        //return dat[y * wid + x];
-    //}
-    //return 0;
-//}
 
 StairBricks::StairBricks()
 {
@@ -851,24 +865,6 @@ StairBricks::StairBricks()
     }
 }
 
-StairBricks::StairBricks(const StairBricks &incoming)
-{
-    dat = nullptr;
-    if (dat != incoming.dat) {
-        int i, L;
-        CleanUp();
-        wid = incoming.wid;
-        hei = incoming.hei;
-        x = incoming.x;
-        y = incoming.y;
-        L = wid * hei;
-        dat = new char [L];
-        for (i = 0; i < L; ++i) {
-            dat[i] = incoming.dat[i];
-        }
-    }
-}
-
 StairBricks::~StairBricks()
 {
     CleanUp();
@@ -882,24 +878,6 @@ void StairBricks::CleanUp(void)
         x = 0; y = 0;
         dat = nullptr;
     }
-}
-
-StairBricks &StairBricks::operator=(const StairBricks &incoming)
-{
-    if (dat != incoming.dat) {
-        int i, L;
-        CleanUp();
-        wid = incoming.wid;
-        hei = incoming.hei;
-        x = incoming.x;
-        y = incoming.y;
-        L = wid * hei;
-        dat = new char [L];
-        for (i = 0; i < L; ++i) {
-            dat[i] = incoming.dat[i];
-        }
-    }
-    return * this;
 }
 
 void StairBricks::Draw(int cameraX) const
@@ -972,23 +950,6 @@ QBricks::QBricks()
     }
 }
 
-QBricks::QBricks(const QBricks &incoming)
-{
-    dat = nullptr;
-    if (dat != incoming.dat) {
-        int i, L;
-        CleanUp();
-        wid = incoming.wid;
-        hei = incoming.hei;
-        x = incoming.x;
-        y = incoming.y;
-        L = wid * hei;
-        dat = new char [L];
-        for (i = 0; i < L; ++i) {
-            dat[i] = incoming.dat[i];
-        }
-    }
-}
 QBricks::~QBricks()
 {
     CleanUp();
@@ -1002,24 +963,6 @@ void QBricks::CleanUp(void)
         x = 0; y = 0;
         dat = nullptr;
     }
-}
-
-QBricks &QBricks::operator=(const QBricks &incoming)
-{
-    if (dat != incoming.dat) {
-        int i, L;
-        CleanUp();
-        wid = incoming.wid;
-        hei = incoming.hei;
-        x = incoming.x;
-        y = incoming.y;
-        L = wid * hei;
-        dat = new char [L];
-        for (i = 0; i < L; ++i) {
-            dat[i] = incoming.dat[i];
-        }
-    }
-    return * this;
 }
 
 void QBricks::Draw(int cameraX) const
@@ -1079,21 +1022,29 @@ void QBricks::Draw(int cameraX) const
     }
     glEnd();
 }
-void QBricks::MarioContact(int mx, int my, int mw, int mh)
+
+int QBricks::MarioContact(int mx, int my, int mw, int mh)
 {
+    int block_hit_x = -1;
     if (1 == CheckContact(mx, my, mw, mh,
-                          x,  y, w, h)) {
+                          x,  y, w, h)
+        && (abs(mx - x) <= (mw/2))) {
         // Brick should shift up and send x, y position to Monster class
         //Monster_on_bricks_hit(x, y);
         shift = 1;
         ChangePattern();
         patternchanged = 1;
+
+        block_hit_x = x;
     }
 
     if (1 == shift && 0 == fixed) {
         ShiftUp();
     }
+
+    return block_hit_x;
 }
+
 void QBricks::ShiftUp(void)
 {
     int shiftspeed = 2;
@@ -1183,24 +1134,6 @@ Coins::Coins()
     }
 }
 
-Coins::Coins(const Coins &incoming)
-{
-    dat = nullptr;
-    if (dat != incoming.dat) {
-        int i, L;
-        CleanUp();
-        wid = incoming.wid;
-        hei = incoming.hei;
-        x = incoming.x;
-        y = incoming.y;
-        L = wid * hei;
-        dat = new char [L];
-        for (i = 0; i < L; ++i) {
-            dat[i] = incoming.dat[i];
-        }
-    }
-}
-
 Coins::~Coins()
 {
     CleanUp();
@@ -1214,51 +1147,6 @@ void Coins::CleanUp(void)
         dat = nullptr;
     }
 }
-
-Coins &Coins::operator=(const Coins &incoming)
-{
-    if (dat != incoming.dat) {
-        int i, L;
-        CleanUp();
-        wid = incoming.wid;
-        hei = incoming.hei;
-        x = incoming.x;
-        y = incoming.y;
-        L = wid * hei;
-        dat = new char [L];
-        for (i = 0; i < L; ++i) {
-            dat[i] = incoming.dat[i];
-        }
-    }
-    return * this;
-}
-
-//int Coins::GetWidth(void) const
-//{
-    //return wid;
-//}
-//int Coins::GetHeight(void) const
-//{
-    //return hei;
-//}
-
-//void Coins::SetPixel(const int x, const int y, const char c)
-//{
-    //if (0 <= x && 16 >= x && 0 <= y && 16 >= y ) {
-        //dat[x + hei*y] = c;
-    //}
-//}
-
-//void Coins::Print(void) const
-//{
-    //int x,y;
-    //for(y = 0; y < hei; y++) {
-        //for(x = 0; x < wid; x++) {
-            //printf("%c",GetPixel(x, y));
-        //}
-        //printf("\n");
-    //}
-//}
 
 void Coins::Draw(int cameraX)
 {
@@ -1317,21 +1205,6 @@ void Coins::ShiftUp(void)
     else {
         exist = 0;
     }
-    //if (y > y_peak && 0 == reachpeak) {
-        //y -= shiftspeed;
-    //}
-    //else {
-        //y += shiftspeed;
-    //}
-
-    //if (y == y_original) {
-        //shift = 0;
-        //reachpeak = 0;
-    //}
-
-    //if (y <= y_peak) {
-        //reachpeak = 1;
-    //}
 }
 
 //void Coins::MarioContact(int mx, int my, int mw, int mh)
@@ -1340,14 +1213,6 @@ void Coins::ShiftUp(void)
                           //x,  y, 48, 48)) {
         //exist = 0;
     //}
-//}
-
-//char Coins::GetPixel(int x, int y) const
-//{
-    //if(0 <= x && x < wid && 0 <= y && y < hei) {
-        //return dat[y * wid + x];
-    //}
-    //return 0;
 //}
 
 void Objects::Init(void)
@@ -1382,6 +1247,8 @@ void Objects::Init(void)
 
     mushroom.x = 22*48;
     mushroom.y = 576 - (4*48+72);
+
+    brokenbrick.x = 900;
 
     // init bricks
     i = 0;
@@ -1447,25 +1314,36 @@ void Objects::Init(void)
     //}
 }
 
-void Objects::Contact(int mx, int my, int mw, int mh)
+int Objects::Contact(int mx, int my, int mw, int mh, std::string ms)
 {
+    std::array<int, 42> block_hit_xS;
+    int i = 0;
+    int block_hit_x = 0;
+
     for (auto &b : brick) {
-        b.MarioContact(mx, my, mw, mh, coin);
+        block_hit_xS[i] = b.MarioContact(mx, my, mw, mh, ms, coin, &brokenbrick);
+        ++i;
     }
 
     for (auto &q : qbrick) {
-        q.MarioContact(mx, my, mw, mh);
+        block_hit_xS[i] = q.MarioContact(mx, my, mw, mh);
+        ++i;
     }
+
+    block_hit_x = *std::max_element(block_hit_xS.begin(), block_hit_xS.end());
 
     //for (auto &c:coin) {
         //c.MarioContact(mx, my, mw, mh);
     //}
+
+    return block_hit_x;
 }
 
 void Objects::MushroomMove(int marioX, int marioY, int marioW, int marioH, double dt)
 {
     mushroom.MarioContact(marioX, marioY, marioW, marioH);
     mushroom.Move(tube, nTubes, brick, nBricks, qbrick, nQBricks, dt);
+    brokenbrick.Move(dt);
 }
 
 void Objects::Draw(int cameraX)
@@ -1489,6 +1367,8 @@ void Objects::Draw(int cameraX)
     for (auto &q : qbrick) {
         q.Draw(cameraX);
     }
+
+    brokenbrick.Draw(cameraX);
 
 }
 

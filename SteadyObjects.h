@@ -24,17 +24,13 @@ class Tubes : public SteadyObjects
 {
     public:
         Tubes();
-        Tubes(const Tubes &incoming);
         ~Tubes();
         void CleanUp();
 
-        Tubes &operator=(const Tubes &incoming);
 
         int w, h;
         int layers;
-        //void SetPixel(const int x,const int y,const char c);
 
-        //void Print(void) const;
         /*
          * Draw will call DrawUpper and DrawLower
          * DrawLower should take x0, y0 as origin of drawing
@@ -43,68 +39,71 @@ class Tubes : public SteadyObjects
         void Draw(int cameraX) const;
         void DrawUpper(int cameraX) const;
         void DrawLower(int x0, int y0, int cameraX) const;
-        //char GetPixel(int x,int y) const;
 };
 
 class Coins : public SteadyObjects
 {
     public:
         Coins();
-        Coins(const Coins &incoming);
         ~Coins();
         void CleanUp();
 
-        Coins &operator=(const Coins &incoming);
-
         int w, h;
-        //int shift, y_peak, y_original, reachpeak;
         int y_peak;
         int exist;
 
-        //int GetWidth(void) const;
-        //int GetHeight(void) const;
-        //void SetPixel(const int x,const int y,const char c);
 
-        //void Print(void) const;
         void Draw(int cameraX);
         void CoinFly(int x, int y);
         void ShiftUp(void);
-        //char GetPixel(int x,int y) const;
         //void MarioContact(int mx, int my, int mw, int mh);
 };
 
+class BrokenBricks : public SteadyObjects
+{
+    protected:
+        int wid, hei;
+        char * dat;
+    public:
+        int originalX;
+        int x, y;
+        int vx, vy;
+        int diffy;
+        int fly;
+
+        BrokenBricks();
+        ~BrokenBricks();
+        void CleanUp();
+
+        void Draw(int cameraX) const;
+        void Move(double dt);
+};
 
 class Bricks : public SteadyObjects
 {
     public:
         Bricks();
-        Bricks(const Bricks &incoming);
         ~Bricks();
         void CleanUp();
 
-        Bricks &operator=(const Bricks &incoming);
-
-        //void SetPixel(const int x,const int y,const char c);
-
         int w, h;
         int shift, y_peak, y_original, reachpeak;
+        int broken, flycount;
+        BrokenBricks brokenbrick;
         int HaveNCoins;
-        //void Print(void) const;
         void Draw(int cameraX) const;
-        void MarioContact(int mx, int my, int mw, int mh, Coins * coin);
+        int MarioContact(int mx, int my, int mw, int mh, std::string ms,
+                          Coins * coin, BrokenBricks * brokenbrick);
         void ShiftUp();
-        //char GetPixel(int x,int y) const;
+        void Break(double dt);
 };
 
 class StairBricks : public SteadyObjects
 {
     public:
         StairBricks();
-        StairBricks(const StairBricks &incoming);
         ~StairBricks();
         void CleanUp();
-
-        StairBricks &operator=(const StairBricks &incoming);
 
         int w, h;
         void Draw(int cameraX) const;
@@ -114,17 +113,14 @@ class QBricks : public Bricks
 {
     public:
         QBricks();
-        QBricks(const QBricks &incoming);
         ~QBricks();
         void CleanUp();
-
-        QBricks &operator=(const QBricks &incoming);
 
         int w, h;
         int fixed, patternchanged;
         int shift, y_peak, y_original, reachpeak;
         void Draw(int cameraX) const;
-        void MarioContact(int mx, int my, int mw, int mh);
+        int MarioContact(int mx, int my, int mw, int mh);
         void ShiftUp(void);
         void ChangePattern(void);
 };
@@ -136,11 +132,8 @@ class Mushrooms
         char *dat;
     public:
         Mushrooms();
-        Mushrooms(const Mushrooms &incoming);
         ~Mushrooms();
         void CleanUp();
-
-        Mushrooms &operator=(const Mushrooms &incoming);
 
         double x, y, vx, vy;
         int w, h;
@@ -167,6 +160,7 @@ class Objects
         const int nQBricks = 12;
         Coins coin[1];
         Bricks brick[30];
+        BrokenBricks brokenbrick;
         StairBricks stairbrick[44];
         Tubes tube[6];
         QBricks qbrick[12];
@@ -174,8 +168,10 @@ class Objects
         Mushrooms mushroom;
 
         void Init(void);
-        void Contact(int marioX, int marioY, int marioW, int marioH);
-        void MushroomMove(int marioX, int marioY, int marioW, int marioH, double dt);
+        int Contact(int marioX, int marioY, int marioW, int marioH,
+                    std::string marioState);
+        void MushroomMove(int marioX, int marioY, int marioW, int marioH,
+                          double dt);
         void Draw(int cameraX);
 };
 
