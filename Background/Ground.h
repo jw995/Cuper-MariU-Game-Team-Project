@@ -15,6 +15,7 @@ protected:
 	double xx3, yy3, vx3, vy3;
 	double xx4, yy4, vx4, vy4;
 	double xx5, yy5, vx5, vy5;
+	double mmx, mmy, vmx, vmy;
 	double dt;
 
 public:
@@ -25,7 +26,7 @@ public:
 	CharBitmap(const CharBitmap &incoming);
 	CharBitmap &operator=(const CharBitmap &incoming);
 
-	int state, flag1, flag2;
+	int state, flag1, flag2, flag3;
 	double mx, my;
 	int GetWidth(void) const;
 	int GetHeight(void) const;
@@ -41,6 +42,7 @@ public:
 	void Move5(void);
 	void Move_mario(void);
 	void Bounce_mario(void);
+	void Jump_mario(void);
 
 	// Draw functions
 	inline void Draw_quad(int a, int b);
@@ -56,8 +58,10 @@ public:
 	void Draw_people4(int bias1, int bias2);
 	void Draw_people5(int bias1, int bias2);
 	void Draw_Mario(int bias1, int bias2);
+	void Mario_jump(int bias1, int bias2);
 	void init(void);
 	void Draw_everything(int camera_x);
+	void Draw_transit(int camera_x, int player_x);
 	void Draw_move(int camera_x, int player_x);
 };
 
@@ -79,6 +83,8 @@ public:
 	void Draw_soji(int camera_x);
 };
 
-void Draw_edding(int player_x, int player_y, int camera_x, CharBitmap &bmp, Texture &TX);
+void Draw_edding(int player_x, int &camera_x, 
+	CharBitmap &bmp, Texture &TX);
+void Camera_move(int &camera_x, int &player_x);
 
 #endif

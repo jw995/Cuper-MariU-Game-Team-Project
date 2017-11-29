@@ -26,8 +26,8 @@ int main(void)
 {    
 	// set camera
 	int camera_x = 0;
+	int player_x;
 	
-
 	// initialization
 	CharBitmap bmp;
 	bmp.init();
@@ -47,21 +47,7 @@ int main(void)
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 		// move camera
-		if (0 != FsGetKeyState(FSKEY_RIGHT))
-		{
-			camera_x += 10;
-		}
-
-		if (0 != FsGetKeyState(FSKEY_LEFT))
-		{
-			camera_x -= 10;
-		}
-		if (0 != FsGetKeyState(FSKEY_SPACE))
-		{
-			camera_x += 100;
-		}
-		int player_x = camera_x;
-		int player_y = 200;
+		Camera_move(camera_x, player_x);
 
 		/////////////////////// draw everything ////////////////////
 		
@@ -76,8 +62,7 @@ int main(void)
 		bmp.Draw_everything(camera_x);
 
 		// Draw edding 
-		Draw_edding(player_x, player_y, camera_x, bmp, TX);
-		
+		Draw_edding(player_x, camera_x, bmp, TX);
 		
 		FsSwapBuffers();
 

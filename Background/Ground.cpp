@@ -717,6 +717,57 @@ void CharBitmap::Draw_Mario(int bias1, int bias2)
 }
 
 
+void CharBitmap::Mario_jump(int bias1, int bias2)
+{
+	char pattern_mario[] =
+	{
+		"0000011111003333"
+		"0000111111111333"
+		"0000222332302222"
+		"0002323332333222"
+		"0002322333233322"
+		"0002233332222000"
+		"0000033333330000"
+		"0022221222212000"
+		"0222222122221002"
+		"3322222111111002"
+		"3330012111313122"
+		"0302011111111122"
+		"0022211111111122"
+		"0222111111100000"
+		"0200111100000000"
+		"0000000000000000"
+	};
+	SetBitmap(16, 16, pattern_mario);
+	int x, y;
+	for (y = 0; y < hei; y++)
+	{
+		for (x = 0; x < wid; x++)
+		{
+			int a = 3 * x + bias1;
+			int b = 3 * y + bias2;
+			if ('1' == GetPixel(x, y))
+			{
+				glColor3ub(255, 69, 0);
+				Draw_quad(a, b);
+			}
+			else if ('2' == GetPixel(x, y))
+			{
+				glColor3ub(215, 105, 30);
+				Draw_quad(a, b);
+			}
+			else if ('3' == GetPixel(x, y))
+			{
+				glColor3ub(255, 160, 122);
+				Draw_quad(a, b);
+			}
+			else
+			{
+				;
+			}
+		}
+	}
+}
 
 
 char CharBitmap::GetPixel(int x, int y) const
@@ -732,10 +783,12 @@ void CharBitmap::init(void)
 {
 	const double pi = 3.14159265;
 	double theta = 30;
+	double theta1 = 60;
 
 	state = 0;
 	flag1 = 0;
 	flag2 = 0;
+	flag3 = 0;
 	dt = 0.025;
 	vx1 = 400 * cos(theta / 180 * pi);
 	vy1 = -400 * sin(theta / 180 * pi);
@@ -747,6 +800,8 @@ void CharBitmap::init(void)
 	vy4 = -400 * sin(theta / 180 * pi);
 	vx5 = 400 * cos(theta / 180 * pi);
 	vy5 = -400 * sin(theta / 180 * pi);
+	vmy = -100 * cos(theta1 / 180 * pi);
+	vmx = 400 * sin(theta1 / 180 * pi);
 
 	xx1 = 0, yy1 = 0;
 	xx2 = 0, yy2 = 0;
@@ -754,6 +809,7 @@ void CharBitmap::init(void)
 	xx4 = 0, yy4 = 0;
 	xx5 = 0, yy5 = 0;
 	mx = 0, my = 0;
+	mmx = 0, mmy = 0;
 	
 	time_t t = time(NULL);
 	srand(time(NULL));
@@ -852,9 +908,37 @@ void CharBitmap::Bounce_mario(void)
 	my -= 7;
 }
 
-// draw 5 peple
+void CharBitmap::Jump_mario(void)
+{
+	double ddt = 0.015;
+	mmx += vmx*ddt;
+	mmy += vmy*ddt;
+	vmy += 1000 * ddt;
+}
+
+void CharBitmap::Draw_transit(int camera_x, int player_x)
+{
+	// here should change when player_x is not camera_x
+	// change to (player_x >= 48*196) then the player won't appear all of a sudden
+	if (player_x > 48 * 190 && flag3 == 0)
+	{
+		Jump_mario();
+		// draw mario jump to walk to sky
+		// change last block of the stair to 196*48 instead of 190*48!!
+		// and the height is 6 blocks instead of 8!!!
+		Mario_jump(196 * 48 + mmx -camera_x, 168 +mmy);
+	}
+	if (196 * 48 + mmx > 9538)
+	{
+		flag3 = 1;
+	}
+}
+
+
+// draw 5 people and mario
 void CharBitmap::Draw_move(int camera_x, int player_x)
 {
+	// draw slide down
 	if (player_x < 48 * 190 && state==0)
 	{
 		Draw_people1(9555 - camera_x, 235);
@@ -876,11 +960,11 @@ void CharBitmap::Draw_move(int camera_x, int player_x)
 		Draw_people5(9660 + xx5 - camera_x, 417 + yy5);
 	}
 
-	if (9538 + mx < 9875)
+	if (9538 + mx < 9875 && flag3 == 1)
 	{
 		Draw_Mario(9538 + mx - camera_x, 220 + my);
 	}
-	else
+	if (9538 + mx > 9875)
 	{
 		Draw_Mario(9875 - camera_x, 410);
 	}
@@ -1037,6 +1121,7 @@ void Texture::Draw_texture(int camera_x)
 	draw_sth(191 * 48 - camera_x, 456, texId[6], 144, 48);
 	draw_sth(72 * 48 - camera_x, 456, texId[6], 144, 48);
 	draw_sth(115 * 48 - camera_x, 456, texId[6], 144, 48);
+
 }
 
 void Texture::Draw_soji(int camera_x)
@@ -1069,9 +1154,19 @@ void Texture::Draw_soji(int camera_x)
 	glDisable(GL_TEXTURE_2D);
 }
 
-void Draw_edding(int player_x, int player_y, int camera_x, CharBitmap &bmp, Texture &TX)
+void Draw_edding(int player_x, int &camera_x, CharBitmap &bmp, Texture &TX)
 {
-	if (player_x > 48 * 190 && player_y < 216)
+	// camera auto move on
+	if (player_x > 190 * 48)
+	{
+		camera_x += 3;
+	}
+
+	// jump mario
+	bmp.Draw_transit(camera_x, player_x);
+
+	// slide mario
+	if (bmp.flag3 == 1)
 	{
 		bmp.Move1();
 		bmp.Move_mario();
@@ -1108,5 +1203,33 @@ void Draw_edding(int player_x, int player_y, int camera_x, CharBitmap &bmp, Text
 	}
 	bmp.Draw_move(camera_x, player_x);
 	TX.temp = bmp.mx;
+	
+	// camera auto move off
+	if (player_x > 198 * 48)
+	{
+		camera_x -= 3;
+	}
+}
+
+
+void Camera_move(int &camera_x, int &player_x)
+{
+	if (0 != FsGetKeyState(FSKEY_RIGHT)
+		&& player_x <= 190 * 48)
+	{
+		camera_x += 10;
+	}
+
+	if (0 != FsGetKeyState(FSKEY_LEFT)
+		&& player_x <= 190 * 48)
+	{
+		camera_x -= 10;
+	}
+	if (0 != FsGetKeyState(FSKEY_SPACE)
+		&& player_x <= 190 * 48)
+	{
+		camera_x += 100;
+	}
+	player_x = camera_x;
 }
 
