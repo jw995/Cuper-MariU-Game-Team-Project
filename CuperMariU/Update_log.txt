@@ -1,0 +1,85 @@
+11/12/2017:
+- Started linking codes for different functional parts;
+- Fixed several bugs that parameters cannot be correctly passed;
+- Added infinite unknown bugs;
+- Started using prof.Soji's PNG decoder framework for complex images;
+- Fixed a bug that background objects overlap;
+- Adjusted positions of background objects;
+
+11/14/2017:
+- Added light effects for HUNT and WEAN HALL;
+- Added CMU fence to the map;
+
+11/17/2017:
+- Adjusted color scheme for CMU fence;
+- Fixed a bug that Mario's position is out of screen;
+- Fixed a bug that screen cannot scroll correctly;
+- Extended map at the stage ending;
+- Fixed a bug that Mario cannot jump correctly;
+
+11/18/2017:
+- Fixed a bug that Mario thrashes between bricks;
+- Fixed a bug in controlling Mario;
+- Fixed a bug that Mario runs through bricks;
+- Fixed a bug that Mario cannot stand on bricks;
+- Fixed a bug that Mario will not stop jumping when hits bricks;
+- Adjusted attributes for Mario;
+
+11/21/2017:
+- Fixed a bug that Mario runs through tubes;
+- Fixed a bug that mushrooms cannot die correctly;
+- Adjusted positions of monsters;
+- Fixed a bug that monsters cannot find gaps;
+- Fixed a bug that monsters cannot fall when no bricks under;
+- Fixed a bug that multiple bricks can be hit at the same time;
+
+-11/24/2017:
+- Fixed a bug that a turtle cannot turn into shell correctly;
+- Partly re-write Mario's jumping mechanism and collision check conditions;
+- Fixed a lot of bugs due to new framework for Mario;
+
+11/25/2017:
+- Fixed a bug that Mario cannot die when hit by monsters;
+- Fixed a bug that monsters runs through tubes;
+- Fixed a bug that monsters runs through each other;
+- Fixed a bug that turtle shell's moving direction is not correct;
+- Adjusted attributes for turtle shell;
+- Fixed a bug that mushrooms will not die when hit by shell;
+
+11/27/2017:
+- Fixed a bug that mushroom (for eating) will not appear;
+- Fixed bugs that mushroom (for eating) cannot move correctly;
+- Adjusted coins in bricks;
+- Fixed a bug that bricks will not break when hit by Super Mario;
+- Fixed a bug that Super Mario will fly through bricks;
+- Fixed a bug that Mario cannot die in gaps;
+- Fixed a bug that Super Mario cannot die in gaps correctly;
+- Fixed a bug that Mario cannot grow up after eating mushroom;
+
+11/29/2017:
+- Fixed a bug that monsters cannot identify broken bricks;
+- Fixed a bug that monsters cannot be killed when brick beneath is hit;
+- Fixed a bug that died monsters can kill Mario;
+- Fixed a bug that monsters can be kill in the air;
+
+11/30/2017:
+- Added starting game menu and game over interface;
+- Added the special ending for stage clear;
+- Fixed  bugs that Mario interacts incorrectly with stair bricks;
+- Fixed a bug that mushroom (for eating) cannot identify broken bricks;
+
+11/31/2017:
+- Re-imaged bitmap for Super Mario;
+- Added bitmap for dead Mario;
+- Adjusted Mario's skin color;
+- Added background music and sound effects based on prof.Soji's framework;
+- Adjusted how game ends in different situations;
+- Fixed a bug that exit() function cannot be identified;
+
+12/2/2017:
+- Final test for bugs;
+- Tried to hide all bugs that we cannot handle;
+- Prayed that gamers cannot find our bugs;
+- Tried to Clean up all the mess in codes;
+- Added author info in header files;
+- Stop updating.
