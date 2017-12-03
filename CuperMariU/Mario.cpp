@@ -936,14 +936,8 @@ int Mario::findCollisionIdx(Bricks B_targets[], int B_num,
 	int mHei = GetHeight()*ycellSize;
 	int closetIdx = -1, closetDis = -1;
 	double centerMarioX, centerMarioY, centerTargetX, centerTargetY;
-	for (int i = SB_num-1; i >= 0; --i)
-	{
-		if (((SB_targets[i].x<x+mWid) && (SB_targets[i].x>=x)) ||
-			((SB_targets[i].x+48<x+mWid) && (SB_targets[i].x+48>=x)))
-				return i+B_num + QB_num + T_num;
-	}
 
-	for (int i = 0; i < B_num + QB_num + T_num; i ++)
+	for (int i = 0; i < B_num + QB_num + T_num + SB_num; i ++)
 	{
 		centerMarioX = x + mWid/2;
 		centerMarioY = y - mHei/2;
@@ -964,9 +958,13 @@ int Mario::findCollisionIdx(Bricks B_targets[], int B_num,
 			centerTargetX = T_targets[i-B_num-QB_num].x + T_targets[i-B_num-QB_num].w / 2.0;
 			centerTargetY = T_targets[i-B_num-QB_num].y + T_targets[i-B_num-QB_num].h / 2.0;
 		}
-
+		else
+		{
+			centerTargetX = SB_targets[i-B_num-QB_num-T_num].x;
+			centerTargetY = 0;
+		}
 		double dis = computeDistance(centerMarioX, centerMarioY, centerTargetX, centerTargetY);
-		if ((dis < closetDis) || (closetDis == -1))
+		if ((dis <= closetDis) || (closetDis == -1))
 		{
 			closetDis = dis;
 			closetIdx = i;
@@ -1332,10 +1330,9 @@ void Mario::checkLocalCollision_SB(StairBricks &target)
 	int mWid = GetWidth()*xcellSize;
 	int xTLeft, xTRight, yTUp, yTDown;
 	xTLeft = target.x;
-	xTRight = target.x + 48;
+	xTRight = target.x + target.w;
 	yTUp = target.y;
-	yTDown = target.y + 48;
-
+	yTDown = 504;
 	if (x <= xTLeft && xTLeft < x + mWid)
 	{
 		if (y <= yTDown && y > yTUp)
@@ -1359,11 +1356,16 @@ void Mario::checkLocalCollision_SB(StairBricks &target)
 		else if ((y < yTUp) )
 		{
 			collState = 2;
+			if (!isFalling && !isJumping)
+			{
+				isFalling = 1;
+				isJumping = 0;
+				isLanding = 0;
+			}
 		}
 	}
 	else if (x < xTRight && x + mWid >= xTRight)
 	{
-
 		if (y <= yTDown && y > yTUp)
 		{
 			if (((collState == 2) || (collState == 5)))
@@ -1385,6 +1387,21 @@ void Mario::checkLocalCollision_SB(StairBricks &target)
 		else if (y < yTUp)
 		{
 			collState = 5;
+			if (!isFalling && !isJumping)
+			{
+				isFalling = 1;
+				isJumping = 0;
+				isLanding = 0;
+			}
+		}
+	}
+	else
+	{
+		collState = 7;
+		if (y != 504)
+		{
+			isLanding = 0;
+			isFalling = 1;
 		}
 	}
 }

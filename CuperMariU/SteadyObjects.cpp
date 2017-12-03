@@ -925,34 +925,36 @@ void StairBricks::CleanUp(void)
 
 void StairBricks::Draw(int cameraX) const
 {
-    int i, j;
+    int i, j, k=0;
     glBegin(GL_QUADS);
-
+    while(k<((576-y-72)/48)){
     for (i = 0; i < 16; ++i) {
         for (j = 0; j < 16; ++j) {
             switch (dat[i + hei*j]) {
                 case 'y':
                     glColor3ub(251,221,194);
-                    DrawRect(x+i*pixelperbit-cameraX, y+j*pixelperbit,
-                            x+(i+1)*pixelperbit-cameraX, y+(j+1)*pixelperbit,
+                    DrawRect(x+i*pixelperbit-cameraX, y+48*k+j*pixelperbit,
+                            x+(i+1)*pixelperbit-cameraX, y+48*k+(j+1)*pixelperbit,
                             1);
                     break;
                 case 'b':
                     glColor3ub(213,60,15);
-                    DrawRect(x+i*pixelperbit-cameraX, y+j*pixelperbit,
-                            x+(i+1)*pixelperbit-cameraX, y+(j+1)*pixelperbit,
+                    DrawRect(x+i*pixelperbit-cameraX, y+48*k+j*pixelperbit,
+                            x+(i+1)*pixelperbit-cameraX, y+48*k+(j+1)*pixelperbit,
                             1);
                     break;
                 case 'k':
                     glColor3ub(0,0,0);
-                    DrawRect(x+i*pixelperbit-cameraX, y+j*pixelperbit,
-                            x+(i+1)*pixelperbit-cameraX, y+(j+1)*pixelperbit,
+                    DrawRect(x+i*pixelperbit-cameraX, y+48*k+j*pixelperbit,
+                            x+(i+1)*pixelperbit-cameraX, y+48*k+(j+1)*pixelperbit,
                             1);
                     break;
                 default:
                     break;
             }
         }
+    }
+    ++k;
     }
     glEnd();
 }
@@ -1287,12 +1289,14 @@ void Objects::Init(void)
                       8,  8,  8,  4,  4,  4,  4,
                       8,  8,  8,  8,  8,
                       4,  4,  4,  4,  4};
-    int stairbrickx[] = {191,192,192,193,193,193,194,194,194,194,
+    /*int stairbrickx[] = {191,192,192,193,193,193,194,194,194,194,
                          195,195,195,195,195,196,196,196,196,196,196,
-                         197,197,197,197,197,197};
-    int stairbricky[] = {  1,  1,  2,  1,  2,  3,  1,  2,  3,  4,
+                         197,197,197,197,197,197};*/
+    int stairbrickx[] = {191,192,193,194,195,196,197};
+    /*int stairbricky[] = {  1,  1,  2,  1,  2,  3,  1,  2,  3,  4,
                            1,  2,  3,  4,  5,  1,  2,  3,  4,  5,  6,
-                           1,  2,  3,  4,  5,  6};
+                           1,  2,  3,  4,  5,  6};*/
+    int stairbricky[] = {1,2,3,4,5,6,6};
     int tubex[] = { 28, 38, 46, 57,135,151,163,179};
     int tubel[] = {  2,  3,  4,  4,  3,  3,  2,  2};  // layers
     int qbrickx[] = { 22, 24, 23, 79, 95,

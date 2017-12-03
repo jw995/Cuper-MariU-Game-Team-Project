@@ -84,7 +84,7 @@ void GameSetting::timerFired(void)
 		myMonsters.timeFired(cameraX, myObjects.tube, myObjects.brick[3].broken, block_hit_x, myMario.x, myMario.y-48, myMario.spdX, myMario.spdY, 48, 48 );
 	}
 	
-	int idx1 = myMario.findCollisionIdx(myObjects.brick, 30, myObjects.qbrick, 12, myObjects.tube, 8, myObjects.stairbrick, 27);
+	int idx1 = myMario.findCollisionIdx(myObjects.brick, 30, myObjects.qbrick, 12, myObjects.tube, 8, myObjects.stairbrick, 7);
 	if(idx1 < 30)
 	{
 		myMario.checkLocalCollision_B(myObjects.brick[idx1]);

@@ -1,5 +1,5 @@
 /*
- * Game title: CuperMariu
+ * Game title: CuperMariU
  * A group project of course 24-780 @ 17 Fall semester in CMU
  * Group members: Ke Han / Han-Yu Lee / Jia-Yi Wang / Calvin Qiao / 
  *				  Yueh-Han Chuang / Yen-Hsiang Huang
@@ -62,7 +62,7 @@ void run(int width, int height, int mapWidth, int mapHeight) {
 		FsPollDevice();
 		CuperMariU.PassedTime = (double)FsPassedTime()/1000.0;
 		auto key = FsInkey();
-		if (key == FSKEY_SPACE)
+		if (key == FSKEY_SPACE && CuperMariU.myMario.isJumping == 0 && CuperMariU.myMario.isFalling == 0)
 		{
 			player.Stop(jumpNotice);
 			player.PlayOneShot(jumpNotice);

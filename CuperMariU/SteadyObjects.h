@@ -205,7 +205,7 @@ class Objects
         Coins coin[1];
         Bricks brick[30];
         BrokenBricks brokenbrick;
-        StairBricks stairbrick[27];
+        StairBricks stairbrick[7];
         Tubes tube[8];
         QBricks qbrick[12];
 
