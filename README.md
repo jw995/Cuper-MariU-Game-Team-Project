@@ -9,8 +9,6 @@ Press 'space' to jump.
 Press 'ESC' to exit.  
 
 # Want an easy way to learn about our project?
-Just download the file **`Cuper-MariU video.mp4`** from here!   
-Or click this link: ![Our video](./Cuper-MariU%20video.mp4)  
-And --- watch it!!!
-
+Just download the file **`Cuper-MariU video.mp4`** from here!     
+Or click this link: ![Our video](./Cuper-MariU%20video.mp4) And --- watch it!!!  
 You can also have a look at our poster: ![Our poster](./final%20poster.pdf)
