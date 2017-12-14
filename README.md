@@ -10,5 +10,5 @@ Press 'ESC' to exit.
 
 # Want an easy way to learn about our project?
 Just download the file **`Cuper-MariU video.mp4`** from here!   
-Or click on this link: [Cuper-MariU video](../Cuper-MariU video.mp4)!  
+Or click on this link: [Cuper-MariU video](/Cuper-MariU video.mp4)!  
 And --- watch it!!!
