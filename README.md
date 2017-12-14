@@ -10,7 +10,7 @@ Press 'ESC' to exit.
 
 # Want an easy way to learn about our project?
 Just download the file **`Cuper-MariU video.mp4`** from here!   
-(the same directory as where you are)  
+Or click this link: ![Our video](./Cuper-MariU%20video.mp4)  
 And --- watch it!!!
 
-![Our poster](https://github.com/jw995/Cuper-MariU-24780-Team-Project/blob/master/final%20poster.pdf)
+You can also have a look at our poster: ![Our poster](./final%20poster.pdf)
