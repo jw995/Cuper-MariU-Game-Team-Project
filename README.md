@@ -13,4 +13,4 @@ Just download the file **`Cuper-MariU video.mp4`** from here!
 (the same directory as where you are)  
 And --- watch it!!!
 
-![Our poster](https://github.com/jw995/Cuper-MariU-24780-Team-Project/blob/Background/poster.png)
+![Our poster](https://github.com/jw995/Cuper-MariU-24780-Team-Project/blob/master/final%20poster.pdf)
